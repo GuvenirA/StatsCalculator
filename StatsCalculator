@@ -1,0 +1,192 @@
+import java.util.Arrays;
+/**
+ * @file StatsCalculator.java
+ * @date 3/15/2023
+ * @author Ashton Guvenir
+ *
+ * @description Creates an array list and calculates the sum, mean, min, first quartile, median,
+ * third quartile, max, and outliers of the list.
+ */
+public class StatsCalculator{
+
+    //instance variables
+
+    private double[] values;
+    private double[] sortedValues;
+    private double[] outliers;
+
+
+    //default contructor
+
+    /**
+     * @description Creates an array with the default size of 20 elements, each with the value of 0.
+     */
+    public StatsCalculator(){
+        values = new double[20];
+    }
+
+
+    //overloaded constructor (with parameters)
+
+    /**
+     * @description Creates an array with the specified numbers in the elements.
+     * @param values the list of numbers in the array
+     */
+    public StatsCalculator(double[] values){
+        this.values = values;
+    }
+
+
+    //sort method
+
+    /**
+     * @description sorts the elements in the array to the instance variable sortedValues.
+     */
+    public void sortData(){
+        sortedValues = values;
+        Arrays.sort(sortedValues);
+    }
+
+
+    //calculator methods
+
+    /**
+     * @description calculates the maximum value of the array.
+     * @return the maximum value of the array
+     */
+    public double calculateMax(){
+        sortData();
+        return sortedValues[values.length - 1];
+    }
+
+    /**
+     * @description calculates the minimum value of the array
+     * @return the minimum values of the array
+     */
+    public double calculateMin(){
+        sortData();
+        return sortedValues[0];
+    }
+
+    /**
+     * @description finds the value of the first quartile of the array.
+     * @return the value of the first quartile
+     */
+    public double calculateFirstQuartile(){
+        sortData();
+        return sortedValues[values.length / 4];
+    }
+
+    /**
+     * @description finds the value of the third quartile of the array.
+     * @return the value of the third quartile
+     */
+    public double calculateThirdQuartile(){
+        sortData();
+        return sortedValues[values.length * 3 / 4];
+    }
+
+    /**
+     * @description finds the median of the array.
+     * @return the value of the median
+     */
+    public double calculateMedian(){
+        sortData();
+        if(values.length % 2 != 0){
+            return sortedValues[values.length / 2];
+        }
+        else{
+            double left = sortedValues[(values.length - 1) / 2];
+            double right = sortedValues[(values.length - 1) / 2 + 1];
+            return (left + right) / 2;
+        }
+    }
+
+    /**
+     * @description finds the sum of the array.
+     * @return the sum
+     */
+    public double calculateSum(){
+        double sum = 0;
+        for(int i = 0; i < values.length; i++){
+            sum += values[i];
+        }
+        return sum;
+    }
+
+    /**
+     * @description finds the mean of the array.
+     * @return the mean
+     */
+    public double calculateMean(){
+        return calculateSum() / values.length;
+    }
+
+    /**
+     * @description finds the outliers of the array and puts then into the instance vairable Outliers.
+     */
+    public void findOutliers(){
+        int numOutliers = 0;
+        int count = 0;
+        double onePointFiveIQR = calculateThirdQuartile() - calculateFirstQuartile() * 1.5;
+        double lowerBoundary = calculateFirstQuartile() - onePointFiveIQR;
+        double upperBoundary = calculateThirdQuartile() + onePointFiveIQR;
+        for(int i = 0; i < values.length; i++){
+            if((values[i] < lowerBoundary) || (values[i] > upperBoundary)){
+                numOutliers++;
+            }
+        }
+        outliers = new double[numOutliers];
+        for(int i = 0; i < values.length; i++){
+            if((values[i] < lowerBoundary) || (values[i] > upperBoundary)){
+                outliers[count] = values[i];
+                count++;
+            }
+        }
+    }
+
+
+    //print methods
+
+    /**
+     * @description prints the array's values.
+     */
+    public void print(){
+        System.out.print("Your data is: ");
+        for(double data : values){
+            System.out.print(data + " ");
+        }
+        System.out.println();
+    }
+
+    /**
+     * @description prints the array's sorted values.
+     */
+    public void printSorted(){
+        sortData();
+        System.out.print("Your sorted data is: ");
+        for(double sortedData : sortedValues){
+            System.out.print(sortedData + " ");
+        }
+        System.out.println();
+    }
+
+    /**
+     * @desrciption prints the array's outliers and five number summary:
+     * minimum, first quartile, median, third quartile, and maximum
+     */
+    public void printFiveNumberSummary(){
+        System.out.println("The five number summary is:");
+        System.out.println("     Minimum: " + calculateMin());
+        System.out.println("     First Quartile: " + calculateFirstQuartile());
+        System.out.println("     Median: " + calculateMedian());
+        System.out.println("     Third Quartile: " + calculateThirdQuartile());
+        System.out.println("     Maximum: " + calculateMax());
+        findOutliers();
+        System.out.print("     Outliers: ");
+        for(double outlierValues : outliers){
+            System.out.print(outlierValues + " ");
+        }
+        System.out.println();
+    }
+}
